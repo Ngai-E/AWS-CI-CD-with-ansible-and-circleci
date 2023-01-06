@@ -264,7 +264,7 @@ cleanup:
             
 
 workflows:
-  default:
+  uda-people-workflow:
     jobs:
       - build-frontend
       - build-backend

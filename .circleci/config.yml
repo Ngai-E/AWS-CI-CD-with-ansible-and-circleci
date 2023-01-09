@@ -60,6 +60,32 @@ jobs:
             cd backend
             npm install
             npm run test   
+
+  scan-frontend:
+    <<: *defaultsNode
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [frontend-build]
+      - run: 
+          name: Scan front end code for vulnerable software packages 
+          command: |
+            cd frontend
+            npm install
+            npm audit --audit-level=critical
+  scan-backend:
+    <<: *defaultsNode
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [backend-build]
+      - run: 
+          name: Scan back end code for vulnerable software libraries 
+          command: |
+            cd backend
+            npm install
+            npm audit --audit-level=critical
+      
 workflows:
   uda-people-workflow:
     jobs:
@@ -68,4 +94,8 @@ workflows:
       - test-frontend:
           requires: [build-frontend]
       - test-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]
+      - scan-backend:
           requires: [build-backend]

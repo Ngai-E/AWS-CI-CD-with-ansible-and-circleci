@@ -133,7 +133,7 @@ jobs:
       - run:
           name: Add back-end ip to ansible inventory
           command: |
-            echo "[all]" > ~/project/.circleci/ansible/inventory.txt
+            # echo "[all]" > ~/project/.circleci/ansible/inventory.txt
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
               --output text >> ~/project/.circleci/ansible/inventory.txt
@@ -142,19 +142,43 @@ jobs:
           root: ~/
           paths:
             - project/.circleci/ansible/inventory.txt
-      - destroy-environment        
+      - destroy-environment  
+
+  configure-infrastructure:
+    docker:
+      - image: python:3.9.16
+    steps:
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["90:9c:c7:26:ae:c4:b8:0a:65:25:d6:45:4c:26:92:85"]
+      - attach_workspace:
+          at: ~/
+      - run:
+          name: Install Ansible
+          command: |
+            apt-get update -y
+            apt install ansible -y
+            which ansible
+      - run: ls -l
+      - run:
+          name: Configure server
+          command: |
+            cd .circleci/ansible
+            ansible-playbook -i inventory.txt configure-server.yml
+      # Here's where you will add some code to rollback on failure              
 workflows:
   uda-people-workflow:
     jobs:
-      - build-frontend
-      - build-backend
-      - test-frontend:
-          requires: [build-frontend]
-      - test-backend:
-          requires: [build-backend]
-      - scan-frontend:
-          requires: [build-frontend]
-      - scan-backend:
-          requires: [build-backend]
-      - deploy-infrastructure:
-          requires: [test-backend, test-frontend, scan-backend, scan-frontend]   
+      # - build-frontend
+      # - build-backend
+      # - test-frontend:
+      #     requires: [build-frontend]
+      # - test-backend:
+      #     requires: [build-backend]
+      # - scan-frontend:
+      #     requires: [build-frontend]
+      # - scan-backend:
+      #     requires: [build-backend]
+      # - deploy-infrastructure:
+      #     requires: [test-backend, test-frontend, scan-backend, scan-frontend]   
+      - configure-infrastructure    

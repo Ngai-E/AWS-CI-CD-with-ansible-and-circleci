@@ -1,5 +1,8 @@
 version: 2.1
 
+# orbs:
+#   slack: circleci/slack@4.12.0
+
 defaults: &defaultsNode
   docker:
     - image: circleci/node:13.8.0

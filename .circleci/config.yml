@@ -18,6 +18,7 @@ commands:
           when: on_fail
           command: |
             aws cloudformation delete-stack --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
+            aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
             aws cloudformation delete-stack --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
   revert-migrations:
     description: Revert the last migration
@@ -264,9 +265,12 @@ jobs:
           name: Install dependencies
           command: |
             apt-get update -y
-            apt install ansible -y
-            which ansible
+            apt install 
             apt install tar gzip -y
+            apt install ansible -y
+            apt install awscli -y
+            apt install nodejs -y
+            apt install npm -y
       - run:
           name: deploy backend
           command: |
@@ -275,7 +279,8 @@ jobs:
             npm run build
             cd ..
             # Zip the directory
-            tar -C backend -czvf artifact.tar.gz .
+            mkdir ~/project/.circleci/ansible/roles/deploy/files
+            tar -C backend -czvf artifact.tar.gz ~/project/.circleci/ansible/roles/deploy/files
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt

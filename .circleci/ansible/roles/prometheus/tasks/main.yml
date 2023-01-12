@@ -19,18 +19,18 @@
 - name: Download file from a file path
   get_url:
     url: https://github.com/prometheus/prometheus/releases/download/v2.41.0/prometheus-2.41.0.linux-amd64.tar.gz
-    dest: /home/ubuntu/prometheus-2.41.0.linux-amd64.tar.gz
+    dest: ~/prometheus-2.41.0.linux-amd64.tar.gz
 
 - name: Extract file
   unarchive:
-    src: /home/ubuntu/prometheus-2.41.0.linux-amd64.tar.gz
-    dest: /home/ubuntu/
+    src: ~/prometheus-2.41.0.linux-amd64.tar.gz
+    dest: ~/
     remote_src: yes
 
 - name: Move Prometheus
   shell: |
     rm -rf prometheus-files
-    mv /home/ubuntu/prometheus-2.41.0.linux-amd64 prometheus-files    
+    mv ~/prometheus-2.41.0.linux-amd64 prometheus-files    
 
 - name: Move files
   shell: |

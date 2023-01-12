@@ -1,0 +1,2 @@
+[monitoring]
+ec2-34-226-122-76.compute-1.amazonaws.com

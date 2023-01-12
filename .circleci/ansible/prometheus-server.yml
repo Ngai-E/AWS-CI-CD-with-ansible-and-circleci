@@ -1,0 +1,7 @@
+---
+- hosts: monitoring
+  user: ubuntu
+  become: true
+
+  roles:
+    - prometheus

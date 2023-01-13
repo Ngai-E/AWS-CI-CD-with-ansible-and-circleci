@@ -4,22 +4,26 @@
     state: directory
 
 - name: copy artifact into ec2 instance
-  become: true
   copy:
     src: artifact.tar.gz
     dest: ~/web
 
 - name: extract zip artificat into ec2 instance
-  become: true
   unarchive:
     src: ~/web/artifact.tar.gz
     dest: ~/web
+    remote_src: yes
 
 - name: Executing node
   shell: |
     cd ~/web
+    ls ~/web
     npm install
+    npm run build
     pm2 stop default
-    # cd dist
-    # pm2 start main.js
     pm2 start npm -- start
+  register: print_result  
+
+- name: print job execution
+  debug:
+    msg: "{{ print_result.stdout_lines }}"  

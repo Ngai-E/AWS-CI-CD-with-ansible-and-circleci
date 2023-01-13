@@ -1,1 +1,2 @@
 [web]
+ec2-34-203-205-114.compute-1.amazonaws.com

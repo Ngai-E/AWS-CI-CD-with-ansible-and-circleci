@@ -253,8 +253,9 @@ jobs:
       - revert-migrations  
 
   deploy-backend:
-    docker:
-      - image: python:3.9.16
+    <<: *defaultsNode
+    # docker:
+    #   - image: python:3.9.16
     steps:
       - checkout
       - add_ssh_keys:
@@ -265,58 +266,56 @@ jobs:
           name: Install dependencies
           command: |
             apt-get update -y
-            tar --version
-            gzip --version
-            # apt install tar gzip -y
-            # apt install ansible -y
-            # apt install awscli -y
-            apt install nodejs -y
-            apt install npm -y
+            apt install tar gzip -y
+            apt install ansible -y
+            apt install awscli -y
+            # apt install nodejs -y
+            # apt install npm -y
       - run:
           name: deploy backend
           command: |
-            mkdir .circleci/ansible/roles/deploy/files
-            ls -l .circleci/ansible/roles/deploy
             cd backend
             npm i
             npm run build
             cd ..
             # Zip the directory
-            tar -C backend -czvf artifact.tar.gz .circleci/ansible/roles/deploy/files
+            tar -C backend -czvf artifact.tar.gz .
             cd .circleci/ansible
-            ls -l .circleci/ansible/roles/deploy/files
-            # echo "Contents  of the inventory.txt file is -------"
-            # cat inventory.txt
-            # ansible-playbook -i inventory.txt deploy-backend.yml
-      # - destroy-environment 
-      # - revert-migrations     
+            mkdir roles/deploy/files
+            echo "Move artifact into ansible deploy roles files directory -------"
+            mv ../../artifact.tar.gz roles/deploy/files
+            echo "Contents  of the inventory.txt file is -------"
+            cat inventory.txt
+            ansible-playbook -i inventory.txt deploy-backend.yml
+      - destroy-environment 
+      - revert-migrations     
 
 workflows:
   uda-people-workflow:
     jobs:
-      # - build-frontend
-      # - build-backend
-      # - test-frontend:
-      #     requires: [build-frontend]
-      # - test-backend:
-      #     requires: [build-backend]
-      # - scan-frontend:
-      #     requires: [build-frontend]
-      # - scan-backend:
-      #     requires: [build-backend]
-      # - deploy-infrastructure:
-      #     requires: [test-frontend, test-backend, scan-frontend, scan-backend]
-      #     filters:
-      #       branches:
-      #         only: [master]
-      # - configure-infrastructure:
-      #     requires: [deploy-infrastructure]
-      # - run-migrations:
-      #     requires: [configure-infrastructure]
-      # - deploy-frontend:
-      #     requires: [run-migrations]
-      - deploy-backend
-          # requires: [run-migrations]
+      - build-frontend
+      - build-backend
+      - test-frontend:
+          requires: [build-frontend]
+      - test-backend:
+          requires: [build-backend]
+      - scan-frontend:
+          requires: [build-frontend]
+      - scan-backend:
+          requires: [build-backend]
+      - deploy-infrastructure:
+          requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+          filters:
+            branches:
+              only: [master]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]
+      - deploy-frontend:
+          requires: [run-migrations]
+      - deploy-backend:
+          requires: [run-migrations]
       # - smoke-test:
       #     requires: [deploy-backend, deploy-frontend]
       # - cloudfront-update:

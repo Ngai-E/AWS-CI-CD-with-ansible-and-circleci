@@ -17,9 +17,9 @@
 
 - name: Executing node
   shell: |
-    cd ~/web/artifact/backend
+    cd ~/web
     npm install
     pm2 stop default
     # cd dist
-    # pm2 start index.js
+    # pm2 start main.js
     pm2 start npm -- start

@@ -1,4 +1,5 @@
 URL01
- https://github.com/Ngai-E/Udapeople.git
+https://github.com/Ngai-E/Udapeople.git
 
- 
+URL02
+http://udapeople-2374231.s3-website-us-east-1.amazonaws.com/ 

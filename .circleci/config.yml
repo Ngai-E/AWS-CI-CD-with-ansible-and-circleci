@@ -253,9 +253,8 @@ jobs:
       - revert-migrations  
 
   deploy-backend:
-    <<: *defaultsNode
-    # docker:
-    #   - image: python:3.9.16
+    docker:
+      - image: python:3.9.16
     steps:
       - checkout
       - add_ssh_keys:
@@ -266,11 +265,10 @@ jobs:
           name: Install dependencies
           command: |
             apt-get update -y
-            apt install tar gzip -y
             apt install ansible -y
             apt install awscli -y
-            # apt install nodejs -y
-            # apt install npm -y
+            apt install nodejs -y
+            apt install npm -y
       - run:
           name: deploy backend
           command: |
@@ -307,7 +305,7 @@ workflows:
           requires: [test-frontend, test-backend, scan-frontend, scan-backend]
           filters:
             branches:
-              only: [master]
+              only: [main]
       - configure-infrastructure:
           requires: [deploy-infrastructure]
       - run-migrations:

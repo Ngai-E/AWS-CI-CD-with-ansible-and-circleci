@@ -219,6 +219,17 @@ jobs:
       - destroy-environment:
           workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
 
+  test-job:
+    docker:
+      - image: circleci/node:13.8.0     
+    steps:
+      - run:
+          name: create variable
+          command: |
+            echo "my name is eli" > ~/text.txt
+      - run: 
+          name: print home file
+          command: cat ~/text.txt       
   deploy-frontend:
     docker:
       - image: amazon/aws-cli
@@ -299,33 +310,31 @@ jobs:
 
   smoke-test:
     docker:
-      - image: python:3.9.16
+      - image:  circleci/node:13.8.0 
     steps:
       - checkout
       - run:
           name: Install dependencies
           command: |
-            apt-get update -y
-            apt install awscli -y
-            apt install nodejs -y
-            apt install npm -y
+            sudo apt-get update -y
+            sudo apt install awscli -y
       - run:
           name: Get backend url
           command: |
-            export BACKEND_IP=$(aws ec2 describe-instances  --query 'Reservations[*].Instances[*].PublicDnsName' --filter Name=tag:project,Values=udapeople --output text)
-            echo ${BACKEND_IP}
-          environment:
-            BACKEND_IP: ${BACKEND_IP}    
+            aws ec2 describe-instances  --query 'Reservations[*].Instances[*].PublicDnsName' --filter Name=tag:project,Values=udapeople --output text \
+              > ~/urlbackend.txt
+            cat ~/urlbackend.txt
       - run:
           name: Backend smoke test.
           command: |
+            export BACKEND_IP=$(cat ~/urlbackend.txt)
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
             if curl "${API_URL}/api/status" | grep "ok"
             then
-                return 0
+                exit 0
             else
-                return 1
+                exit 1
             fi
       - run:
           name: Frontend smoke test.
@@ -340,9 +349,9 @@ jobs:
               return 1
             fi
       - destroy-environment:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
       - revert-migrations:
-          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}" 
+          workflow_id: "${CIRCLE_WORKFLOW_ID:0:7}"
 workflows:
   uda-people-workflow:
     jobs:

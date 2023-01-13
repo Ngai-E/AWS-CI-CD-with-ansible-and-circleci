@@ -18,6 +18,7 @@ commands:
           when: on_fail
           command: |
             aws cloudformation delete-stack --stack-name "udapeople-backend-${CIRCLE_WORKFLOW_ID:0:7}"
+            aws s3 rm s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
             aws cloudformation delete-stack --stack-name "udapeople-frontend-${CIRCLE_WORKFLOW_ID:0:7}"
   revert-migrations:
     description: Revert the last migration
@@ -153,7 +154,7 @@ jobs:
           command: |
             # echo "[web]" > ~/project/.circleci/ansible/inventory.txt
             aws ec2 describe-instances \
-              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' --filter Name=tag:project,Values=udapeople \
               --output text >> ~/project/.circleci/ansible/inventory.txt
             cat ~/project/.circleci/ansible/inventory.txt
       - persist_to_workspace:
@@ -235,7 +236,11 @@ jobs:
       - run:
           name: Get backend url
           command: |
+<<<<<<< HEAD
             export BACKEND_IP=$(aws ec2 describe-instances  --query 'Reservations[*].Instances[*].PublicIpAddress' --filter Name=tag:Name,Values=prometheus --output text)
+=======
+            export BACKEND_IP=$(aws ec2 describe-instances  --query 'Reservations[*].Instances[*].PublicIpAddress' --filter Name=tag:project,Values=udapeople --output text)
+>>>>>>> aeb1b8b89450b234af52552d5cde29e2a30aa60f
             export API_URL="http://${BACKEND_IP}:3030"
             echo "API_URL = ${API_URL}"
             echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
@@ -264,9 +269,12 @@ jobs:
           name: Install dependencies
           command: |
             apt-get update -y
-            apt install ansible -y
-            which ansible
+            apt install 
             apt install tar gzip -y
+            apt install ansible -y
+            apt install awscli -y
+            apt install nodejs -y
+            apt install npm -y
       - run:
           name: deploy backend
           command: |
@@ -275,7 +283,8 @@ jobs:
             npm run build
             cd ..
             # Zip the directory
-            tar -C backend -czvf artifact.tar.gz .
+            mkdir ~/project/.circleci/ansible/roles/deploy/files
+            tar -C backend -czvf artifact.tar.gz ~/project/.circleci/ansible/roles/deploy/files
             cd .circleci/ansible
             echo "Contents  of the inventory.txt file is -------"
             cat inventory.txt

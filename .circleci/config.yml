@@ -236,7 +236,7 @@ jobs:
       - run:
           name: Get backend url
           command: |
-            export BACKEND_IP=$(aws ec2 describe-instances  --query 'Reservations[*].Instances[*].PublicIpAddress' --filter Name=tag:project,Values=udapeople --output text)
+            export BACKEND_IP=$(aws ec2 describe-instances  --query 'Reservations[*].Instances[*].PublicDnsName' --filter Name=tag:project,Values=udapeople --output text)
             export API_URL="http://${BACKEND_IP}:3030"
             echo "API_URL = ${API_URL}"
             echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
@@ -247,8 +247,8 @@ jobs:
             cd frontend
             npm install
             npm run build
-            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
             aws s3 cp dist s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7} --recursive
+            tar -czvf artifact-"${CIRCLE_WORKFLOW_ID:0:7}".tar.gz dist
       - destroy-environment 
       - revert-migrations  
 
@@ -277,7 +277,8 @@ jobs:
             npm run build
             cd ..
             # Zip the directory
-            tar -C backend -czvf artifact.tar.gz .
+            tar -C backend -czf artifact.tar.gz .
+            # tar -C backend -czvf artifact.tar.gz .
             cd .circleci/ansible
             mkdir roles/deploy/files
             echo "Move artifact into ansible deploy roles files directory -------"

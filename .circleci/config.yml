@@ -305,6 +305,9 @@ jobs:
           name: Get backend url
           command: |
             export BACKEND_IP=$(aws ec2 describe-instances  --query 'Reservations[*].Instances[*].PublicDnsName' --filter Name=tag:project,Values=udapeople --output text)
+            echo ${BACKEND_IP}
+          environment:
+            BACKEND_IP: ${BACKEND_IP}    
       - run:
           name: Backend smoke test.
           command: |

@@ -155,7 +155,7 @@ jobs:
           command: |
             # echo "[web]" > ~/project/.circleci/ansible/inventory.txt
             aws ec2 describe-instances \
-              --query 'Reservations[*].Instances[*].PublicIpAddress' --filter Name=tag:project,Values=udapeople \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' --filter Name=tag:Name,Values="backend-${CIRCLE_WORKFLOW_ID:0:7}" \
               --output text >> ~/project/.circleci/ansible/inventory.txt
             cat ~/project/.circleci/ansible/inventory.txt
       - persist_to_workspace:
@@ -240,7 +240,7 @@ jobs:
       - run:
           name: Get backend url
           command: |
-            export BACKEND_IP=$(aws ec2 describe-instances  --query 'Reservations[*].Instances[*].PublicDnsName' --filter Name=tag:project,Values=udapeople --output text)
+            export BACKEND_IP=$(aws ec2 describe-instances  --query 'Reservations[*].Instances[*].PublicDnsName' --filter Name=tag:Name,Values="backend-${CIRCLE_WORKFLOW_ID:0:7}" --output text)
             export API_URL="http://${BACKEND_IP}:3030"
             echo "API_URL = ${API_URL}"
             echo API_URL="http://${BACKEND_IP}:3030" >> frontend/.env
@@ -310,7 +310,7 @@ jobs:
       - run:
           name: Get backend url
           command: |
-            aws ec2 describe-instances  --query 'Reservations[*].Instances[*].PublicDnsName' --filter Name=tag:project,Values=udapeople --output text \
+            aws ec2 describe-instances  --query 'Reservations[*].Instances[*].PublicDnsName' --filter Name=tag:Name,Values="backend-${CIRCLE_WORKFLOW_ID:0:7}" --output text \
               > ~/urlbackend.txt
             cat ~/urlbackend.txt
       - run:
@@ -349,15 +349,17 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            yum install nodejs -y
-            yum install npm -y
+            yum remove nodejs  
+            curl --silent --location https://rpm.nodesource.com/setup_16.x | bash -
+            yum -y install nodejs 
             yum install tar gzip -y
       - run:
           name: Fetch and save the old deployment workflow id
           command: |
             aws cloudformation \
-            list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
-            --no-paginate --output text > ~/lastDeployment.txt
+              list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+              --no-paginate --output text > ~/lastDeployment.txt
+            cat ~/lastDeployment.txt
       - persist_to_workspace:
           root: ~/
           paths: 
@@ -398,7 +400,7 @@ jobs:
       - run:
           name: Remove old stacks and files
           command: |
-            # You can use any condition like:
+            export OldWorkflowID=$(cat ~/lastDeployment.txt)
             if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
             then
               echo "-------------------Delete Confirmed------------------------------"
@@ -426,7 +428,7 @@ workflows:
           requires: [test-frontend, test-backend, scan-frontend, scan-backend]
           filters:
             branches:
-              only: [main]
+              only: [master]
       - configure-infrastructure:
           requires: [deploy-infrastructure]
       - run-migrations:

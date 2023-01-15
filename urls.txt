@@ -9,3 +9,6 @@ https://d30k0nd3hhf2ga.cloudfront.net
 
 URL04
 ec2-3-80-188-177.compute-1.amazonaws.com:3030/api/status
+
+URL05
+http://ec2-107-22-129-40.compute-1.amazonaws.com:9090/targets

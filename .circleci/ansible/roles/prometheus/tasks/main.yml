@@ -70,5 +70,6 @@
 - name: Reload prometheus to register changes
   shell: |
     systemctl daemon-reload
+    sudo systemctl enable prometheus
     systemctl start prometheus
     systemctl status prometheus         

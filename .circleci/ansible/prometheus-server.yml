@@ -3,5 +3,10 @@
   user: ubuntu
   become: true
 
+  # Get the environment variables from CircleCI and add to the EC2 instance
+  environment:
+    - AWS_ACCESS_KEY_ID: "{{ lookup('env', 'AWS_ACCESS_KEY_ID')}}"
+    - AWS_DEFAULT_REGION: "{{ lookup('env', 'AWS_DEFAULT_REGION')}}"
+    - AWS_SECRET_ACCESS_KEY: "{{ lookup('env', 'AWS_SECRET_ACCESS_KEY')}}"
   roles:
     - prometheus

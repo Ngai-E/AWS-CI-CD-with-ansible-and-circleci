@@ -2,4 +2,10 @@ URL01
 https://github.com/Ngai-E/Udapeople.git
 
 URL02
-http://udapeople-2374231.s3-website-us-east-1.amazonaws.com/ 
+http://udapeople-d16ef35.s3-website-us-east-1.amazonaws.com/ 
+
+URL03
+https://d30k0nd3hhf2ga.cloudfront.net
+
+URL04
+ec2-3-80-188-177.compute-1.amazonaws.com:3030/api/status

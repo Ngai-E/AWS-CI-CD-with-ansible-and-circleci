@@ -60,6 +60,13 @@
     chown prometheus:prometheus /etc/prometheus/prometheus.yml       
     chown prometheus:prometheus /etc/systemd/system/prometheus.service  
 
+- name: Add aws keys in prometheus.yml
+  shell: |
+    # sed -i '' "s/AWS_SECRET_ACCESS_KEY_HERE/$AWS_SECRET_ACCESS_KEY/g" /etc/prometheus/prometheus.yml ## for mac
+    sed -i "s/AWS_DEFAULT_REGION_HERE/$AWS_DEFAULT_REGION/g" /etc/prometheus/prometheus.yml
+    sed -i "s/AWS_ACCESS_KEY_ID_HERE/$AWS_ACCESS_KEY_ID/g" /etc/prometheus/prometheus.yml
+    sed -i "s/AWS_SECRET_ACCESS_KEY_HERE/$AWS_SECRET_ACCESS_KEY/g" /etc/prometheus/prometheus.yml
+
 - name: Reload prometheus to register changes
   shell: |
     systemctl daemon-reload

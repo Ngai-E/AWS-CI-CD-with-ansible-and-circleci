@@ -319,6 +319,9 @@ jobs:
             export BACKEND_IP=$(cat ~/urlbackend.txt)
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
+            sleep 60 &
+            echo "-----------waiting for servers to become responsive---------"
+            wait
             if curl "${API_URL}/api/status" | grep "ok"
             then
                 exit 0

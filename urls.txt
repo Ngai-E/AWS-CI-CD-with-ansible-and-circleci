@@ -11,4 +11,4 @@ URL04
 http://ec2-3-80-212-99.compute-1.amazonaws.com:3030/api/status
 
 URL05
-http://ec2-107-22-129-40.compute-1.amazonaws.com:9090/targets
+http://ec2-3-95-194-88.compute-1.amazonaws.com:9090/targets

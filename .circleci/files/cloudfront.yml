@@ -26,6 +26,8 @@ Resources:
               OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}"
         Enabled: True
         DefaultRootObject: index.html
+        CustomOrigin:
+          OriginProtocolPolicy: match-viewer
         DefaultCacheBehavior:
           ForwardedValues:
             QueryString: False

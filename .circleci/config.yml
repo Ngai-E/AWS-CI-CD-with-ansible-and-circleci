@@ -319,6 +319,9 @@ jobs:
             export BACKEND_IP=$(cat ~/urlbackend.txt)
             export API_URL="http://${BACKEND_IP}:3030"
             echo "${API_URL}"
+            sleep 60 &
+            echo "-----------waiting for servers to become responsive---------"
+            wait
             if curl "${API_URL}/api/status" | grep "ok"
             then
                 exit 0
@@ -349,15 +352,17 @@ jobs:
       - run:
           name: Install dependencies
           command: |
-            yum install nodejs -y
-            yum install npm -y
+            yum remove nodejs  
+            curl --silent --location https://rpm.nodesource.com/setup_16.x | bash -
+            yum -y install nodejs 
             yum install tar gzip -y
       - run:
           name: Fetch and save the old deployment workflow id
           command: |
             aws cloudformation \
-            list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
-            --no-paginate --output text > ~/lastDeployment.txt
+              list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+              --no-paginate --output text > ~/lastDeployment.txt
+            cat ~/lastDeployment.txt
       - persist_to_workspace:
           root: ~/
           paths: 
@@ -398,7 +403,7 @@ jobs:
       - run:
           name: Remove old stacks and files
           command: |
-            # You can use any condition like:
+            export OldWorkflowID=$(cat ~/lastDeployment.txt)
             if [[ "${CIRCLE_WORKFLOW_ID:0:7}" != "${OldWorkflowID}" ]]
             then
               echo "-------------------Delete Confirmed------------------------------"

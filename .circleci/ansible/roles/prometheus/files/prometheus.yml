@@ -22,7 +22,7 @@ scrape_configs:
   static_configs:
   - targets:
     - localhost:9090
-- job_name: node
+- job_name: udapeople
   honor_timestamps: true
   scrape_interval: 15s
   scrape_timeout: 10s
@@ -30,12 +30,12 @@ scrape_configs:
   scheme: http
   ec2_sd_configs:
   - endpoint: ""
-    region: us-east-1
-    access_key: AKIAQPFPA7R22PXYBMUL
-    secret_key: <secret>
+    region: AWS_DEFAULT_REGION_HERE
+    access_key: AWS_ACCESS_KEY_ID_HERE
+    secret_key: AWS_SECRET_ACCESS_KEY_HERE
     refresh_interval: 1m
     port: 9100
     filters:
-    - name: tag:Monitor
+    - name: tag:project
       values:
-      - nodes
+      - udapeople

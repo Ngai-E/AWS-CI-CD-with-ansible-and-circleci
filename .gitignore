@@ -38,6 +38,7 @@ venv/
 *.log
 *.tmp
 *.tmp.*
+*.zip
 log.txt
 *.sublime-project
 *.sublime-workspace

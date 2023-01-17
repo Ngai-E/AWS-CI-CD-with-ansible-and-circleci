@@ -1,0 +1,27 @@
+global:
+  resolve_timeout: 1m
+  slack_api_url: 'SLACK_API_URL'
+
+route:
+  group_by: ['slackInstanceDown']
+  receiver: 'slack-notifications'
+  routes:
+    - group_by: ['EmailInstanceDown']
+      receiver: 'email-me'
+      continue: true
+    - group_by: ['slackInstanceDown']
+      receiver: 'slack-notifications'
+      continue: true
+receivers:
+  - name: 'slack-notifications'
+    slack_configs:
+      - channel: '#monitoring-serivces'
+        send_resolved: true
+  - name: 'email-me'
+    email_configs:
+      - to: EMAIL_TO
+        from: EMAIL_FROM
+        smarthost: EMAIL_HOST
+        auth_username: EMAIL_API_USER
+        auth_identity: EMAIL_API_IDENTITY
+        auth_password: EMAIL_API_PASSWORD

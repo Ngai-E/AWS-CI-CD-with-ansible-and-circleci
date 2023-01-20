@@ -16,5 +16,6 @@
     - EMAIL_API_IDENTITY: "{{ lookup('env', 'EMAIL_API_IDENTITY')}}"
     - EMAIL_API_PASSWORD: "{{ lookup('env', 'EMAIL_API_PASSWORD')}}"
   roles:
-    - prometheus
-    - configure-prometheus-alertmanager
+    # - prometheus
+    # - configure-prometheus-alertmanager
+    - install-nginx

@@ -1,0 +1,33 @@
+---
+- name: Remove nginx
+  apt:
+    pkg: nginx
+    state: absent
+  become: yes
+  
+- name: Update apt packages
+  ansible.builtin.apt:
+    update_cache: yes
+
+- name: "upgrade packages."
+  become: true
+  apt:
+    upgrade: "yes"   
+
+- name: "install nginx"
+  become: yes
+  apt:
+    name: ["nginx"]
+    state: latest
+    update_cache: yes
+
+# - name: Copy nginx config file
+#   become: true
+#   copy: 
+#     src: nginx.conf
+#     dest: /etc/nginx/sites-enabled/default
+
+- name: Reload nginx
+  shell: |
+    nginx -s reload
+    

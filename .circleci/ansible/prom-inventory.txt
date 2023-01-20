@@ -1,2 +1,2 @@
 [monitoring]
-    ec2-3-95-194-88.compute-1.amazonaws.com
+    ec2-54-89-213-215.compute-1.amazonaws.com
